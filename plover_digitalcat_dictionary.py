@@ -389,7 +389,7 @@ class DigitalCATDictionary(StenoDictionary):
     def _load(self, filename):
 
         with open(filename, 'r') as fp:
-            reader = JetReader(f)
+            reader = JetReader(fp)
             adapter = JetToStenoAdapter(reader)
 
             self._contents = {}
