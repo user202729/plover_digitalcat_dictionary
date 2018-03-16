@@ -29,6 +29,7 @@ import xml.etree.ElementTree as ET
 from plover.steno import normalize_steno
 from plover.steno_dictionary import StenoDictionary
 from plover import resource
+from collections import defaultdict
 
 ##############################################
 #

@@ -30,4 +30,6 @@ class TestCase(unittest.TestCase):
 
         filename = 'test/digitalcat-test.dct'
         d = DigitalCATDictionary.load(filename)
-        self.assertEqual(dict(d.items()), EXPECTED)
+
+        for stroke, english in sorted(EXPECTED.items()):
+            self.assertEqual(d[stroke], english)
