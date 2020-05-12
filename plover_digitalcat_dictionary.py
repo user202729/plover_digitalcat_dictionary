@@ -396,8 +396,10 @@ class DigitalCATDictionary(StenoDictionary):
             self._contents = {}
             self._reverse_contents = defaultdict(list)
 
+            self._longest_key = 0
             for (k, v) in adapter:
                 self._contents[k] = v
+                self._longest_key = max(self._longest_key, len(k))
                 self._reverse_contents[v].append(k)
 
     def getattr(self, key, default=None):
