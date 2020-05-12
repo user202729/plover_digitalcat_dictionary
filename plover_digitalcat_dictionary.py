@@ -401,40 +401,12 @@ class DigitalCATDictionary(StenoDictionary):
     def __init__(self):
         super(DigitalCATDictionary, self).__init__()
 
-        self._contents = None
-        self._reverse_contents = None
-        self.readonly = True
-
     def _load(self, filename):
-
         with open(filename, 'rb') as fp:
             reader = JetReader(fp)
             adapter = JetToStenoAdapter(reader)
 
-            self._contents = {}
-            self._reverse_contents = defaultdict(list)
+            self.update(adapter)
 
-            self._longest_key = 0
-            for (k, v) in adapter:
-                self._contents[k] = v
-                self._longest_key = max(self._longest_key, len(k))
-                self._reverse_contents[v].append(k)
-
-    def getattr(self, key, default=None):
-        return self.__getattr__(key, default)
-
-    def __setitem__(self, key, value):
-        raise NotImplementedError()
-
-    def __delitem__(self, key):
-        raise NotImplementedError()
-
-    def __getitem__(self, key):
-        return self._contents.__getitem__(key)
-
-    def get(self, key, fallback=None):
-        return self._contents.get(key, fallback)
-
-    def reverse_lookup(self, value):
-        return self._reverse_contents[value]
-
+        # set readonly after initial load, since writing is not implemented
+        self.readonly = True
