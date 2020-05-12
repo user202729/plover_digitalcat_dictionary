@@ -259,7 +259,10 @@ class JetReader(object):
         if encoded[0:1]==(0xff, 0xfe):
             raise ValueError("compressed string handling is not yet implemented")
 
-        return bytes.decode(encoded, encoding='UTF-16')
+        try:
+            return bytes.decode(encoded, encoding='UTF-16')
+        except UnicodeDecodeError:
+            return ""
 
     def _load_page(self, page_number):
         """
