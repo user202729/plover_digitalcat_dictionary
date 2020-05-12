@@ -338,6 +338,14 @@ class JetToStenoAdapter(object):
         self._source = source
 
     def __iter__(self):
+        PREFIX = 0x8000
+        SUFFIX = 0x4000
+        CAP_NEXT = 0x2000
+        GLUE_LETTER = 0x1000
+        GLUE_NUMBER = 0x800
+        DOUBLE_LAST = 0x400
+        OR_ENDING = 0x200
+        PROPER_NAME = 0x100
 
         for row in self._source:
 
@@ -347,18 +355,25 @@ class JetToStenoAdapter(object):
 
             affix = False
 
-            if flags & 0x8000:
+            if flags & CAP_NEXT:
+                translation = translation.replace("^", "").strip()
+
+            if flags & PREFIX:
                 translation = '^'+translation
                 affix = True
 
-            if flags % 0x4000:
+            if flags & SUFFIX:
                 translation += '^'
+                affix = True
+
+            if flags & GLUE_LETTER or flags & GLUE_NUMBER:
+                translation = '&' + translation
                 affix = True
 
             if affix:
                 translation = "{%s}" % (translation,)
 
-            if flags % 0x2000:
+            if flags & CAP_NEXT:
                 translation += '{-|}'
 
             yield (steno, translation)
