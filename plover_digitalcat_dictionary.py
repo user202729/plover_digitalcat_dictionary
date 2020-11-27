@@ -72,6 +72,33 @@ USEFUL_COLUMNS = ('Steno', 'English', 'Flags')
 
 ##############################################
 
+class JetReader1(object):
+    """An iterator over the steno table inside a Jet4 database.
+
+    The implementation uses mdb-export external binary.
+    """
+    def __init__(self, fp):
+        self._fp = fp
+
+    def __iter__(self):
+        try:
+            import subprocess
+            import csv
+            data=subprocess.check_output(["mdb-export", self._fp.name, "Dictionary"])
+            header=None
+            data=data.decode("u8").splitlines()
+            header=next(csv.reader(data[:1]))
+            for row in csv.reader(data[1:], quoting=csv.QUOTE_NONNUMERIC):
+                row=[int(item) if isinstance(item, float) and item.is_integer() else item for item in row]
+                yield dict(zip(header, row))
+
+        except:
+            import traceback
+            traceback.print_exc()
+
+            raise
+
+
 class JetReader(object):
     """An iterator over the steno table inside a Jet4 database.
     """
@@ -351,7 +378,6 @@ class JetToStenoAdapter(object):
         PROPER_NAME = 0x100
 
         for row in self._source:
-
             steno = _decode_steno(row['Steno'])
             translation = row['English']
             flags = row['Flags']
@@ -403,7 +429,7 @@ class DigitalCATDictionary(StenoDictionary):
 
     def _load(self, filename):
         with open(filename, 'rb') as fp:
-            reader = JetReader(fp)
+            reader = JetReader1(fp)
             adapter = JetToStenoAdapter(reader)
 
             self.update(adapter)
